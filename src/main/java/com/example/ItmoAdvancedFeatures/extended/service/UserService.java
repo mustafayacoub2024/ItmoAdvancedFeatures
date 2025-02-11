@@ -11,7 +11,7 @@ public interface UserService {
 
     UserDataRequest postUser(UserDataRequest userDataRequest);
 
-    UserDataRequest putUser(UserDataRequest userDataRequest, Long id);
+    UserDataResponse putUser(UserDataRequest userDataRequest, Long id);
 
     void deleteUser(Long id);
 

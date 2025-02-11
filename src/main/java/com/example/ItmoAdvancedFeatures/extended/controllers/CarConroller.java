@@ -30,12 +30,12 @@ public class CarConroller {
         return carService.updateCar(id, carDataRequest);
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public void deleteCar(@PathVariable Long id) {
         carService.deleteCar(id);
     }
 
-    @GetMapping("{/all}")
+    @GetMapping("/all")
     public List<CarDataResponse> getAllCarById(){
         return carService.getAllCarById();
     }

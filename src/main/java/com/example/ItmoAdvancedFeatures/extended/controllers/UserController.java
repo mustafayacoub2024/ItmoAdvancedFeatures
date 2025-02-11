@@ -18,7 +18,6 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDataResponse getUsers(@PathVariable Long id) {
         return userService.getUsers(id);
-
     }
 
     @PostMapping
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDataRequest putUser(@RequestBody UserDataRequest userDataRequest, @PathVariable Long id) {
+    public UserDataResponse putUser(@RequestBody UserDataRequest userDataRequest, @PathVariable Long id) {
         return userService.putUser(userDataRequest, id);
     }
 
@@ -36,7 +35,7 @@ public class UserController {
         userService.deleteUser(id);
     }
 
-    @GetMapping("/{all}")
+    @GetMapping("/all")
     public List<UserDataResponse> getAllUsers() {
         return userService.getAllUsers();
     }
