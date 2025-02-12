@@ -40,8 +40,8 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping
-    public UserDataResponse getUsersWithParams(@RequestParam String email, @RequestParam String firstName){
-        return userService.getUsersWithParams(email, firstName);
-    }
+//    @GetMapping
+//    public UserDataResponse getUsersWithParams(@RequestParam String email, @RequestParam String firstName){
+//        return userService.getUsersWithParams(email, firstName);
+//    }
 }

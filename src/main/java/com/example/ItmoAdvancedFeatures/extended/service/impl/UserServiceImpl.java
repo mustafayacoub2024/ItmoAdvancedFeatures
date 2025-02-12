@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataResponse getUsersWithParams(String email, String firstName) {
-        User user = userRepository.getUserByAgeAndEmailAndStatus(email, firstName);
+        User user = userRepository.getUserByEmailAndFirstName(email, firstName);
         return objectMapper.convertValue(user, UserDataResponse.class);
 
     }
