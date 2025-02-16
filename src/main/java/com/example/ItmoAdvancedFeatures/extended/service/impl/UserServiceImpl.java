@@ -1,15 +1,24 @@
 package com.example.ItmoAdvancedFeatures.extended.service.impl;
 
+
+import com.example.ItmoAdvancedFeatures.extended.model.db.entity.Car;
 import com.example.ItmoAdvancedFeatures.extended.model.db.entity.User;
 import com.example.ItmoAdvancedFeatures.extended.model.db.repository.UserRepository;
 import com.example.ItmoAdvancedFeatures.extended.model.dto.requests.UserDataRequest;
+import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.CarDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.UserDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.model.enums.UserStatus;
 import com.example.ItmoAdvancedFeatures.extended.service.UserService;
+import com.example.ItmoAdvancedFeatures.extended.utils.PaginationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +32,8 @@ public class UserServiceImpl implements UserService {
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
 
-    private User getUserFromDB(Long id) {
+    @Override
+    public User getUserFromDB(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         return optionalUser.orElse(new User());
     }
@@ -77,10 +87,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDataResponse> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(user -> objectMapper.convertValue(user, UserDataResponse.class))
+    public Page<UserDataResponse> getAllUsers(Integer page, Integer perPage, String sort, Sort.Direction order, String filter) {
+
+        Pageable pageRequest = PaginationUtils.getPageRuquest(page, perPage, sort, order);
+        List<User> users;
+
+        if (StringUtils.hasText(filter)) {
+            users = userRepository.findAllFiltered(pageRequest, filter);
+        } else {
+            users = userRepository.findAll(pageRequest).getContent();
+        }
+
+        List<UserDataResponse> content = users.stream()
+                .map(u -> objectMapper.convertValue(u, UserDataResponse.class))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(content);
     }
 
     @Override
@@ -88,5 +110,19 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getUserByEmailAndFirstName(email, firstName);
         return objectMapper.convertValue(user, UserDataResponse.class);
 
+    }
+
+    @Override
+    public User updateCarList(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<CarDataResponse> getUserCars(Long id) {
+        User user = getUserFromDB(id);
+        List<Car> cars = user.getCar();
+        return cars.stream()
+                .map(car -> objectMapper.convertValue(car, CarDataResponse.class))
+                .collect(Collectors.toList());
     }
 }
