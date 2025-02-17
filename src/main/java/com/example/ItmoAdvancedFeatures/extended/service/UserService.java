@@ -26,6 +26,4 @@ public interface UserService {
     UserDataResponse getUsersWithParams(String email, String firstName);
 
     User updateCarList(User user);
-
-    List<CarDataResponse> getUserCars(Long id);
 }

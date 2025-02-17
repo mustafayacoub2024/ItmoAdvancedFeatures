@@ -52,11 +52,6 @@ public class UserController {
         return userService.getUsersWithParams(email, firstName);
     }
 
-    @GetMapping("/{id}/cars")
-    public List<CarDataResponse> getUsersWithCars(@PathVariable Long id) {
-        return userService.getUserCars(id);
-    }
-
     @GetMapping("/all")
     public Page<UserDataResponse> getAllUsers(@RequestParam(defaultValue = "1") Integer page,
                                               @RequestParam(defaultValue = "10") Integer perPage,

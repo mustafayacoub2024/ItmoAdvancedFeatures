@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/cars")
@@ -62,5 +64,9 @@ public class CarConroller {
     @PostMapping("/linkCarAndUser/{carId}/{userId}")
     public CarDataResponse linkCarAndUser(@PathVariable Long carId, @PathVariable Long userId){
         return carService.linkCarAndUser(carId, userId);
+    }
+    @GetMapping("/user/{userId}")
+    public List<CarDataResponse> getCarsByUserId(@PathVariable Long userId) {
+        return carService.getCarsByUserId(userId);
     }
 }

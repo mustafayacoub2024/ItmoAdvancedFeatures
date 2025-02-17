@@ -146,4 +146,13 @@ public class CarServiceImpl implements CarService {
 
         return new PageImpl<>(content);
     }
+
+    @Override
+    public List<CarDataResponse> getCarsByUserId(Long userId) {
+            User user = userService.getUserFromDB(userId);
+            List<Car> cars = user.getCar();
+            return cars.stream()
+                    .map(car -> objectMapper.convertValue(car, CarDataResponse.class))
+                    .collect(Collectors.toList());
+    }
 }

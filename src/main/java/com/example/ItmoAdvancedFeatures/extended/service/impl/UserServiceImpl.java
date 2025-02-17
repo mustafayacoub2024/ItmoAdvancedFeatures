@@ -116,13 +116,4 @@ public class UserServiceImpl implements UserService {
     public User updateCarList(User user) {
         return userRepository.save(user);
     }
-
-    @Override
-    public List<CarDataResponse> getUserCars(Long id) {
-        User user = getUserFromDB(id);
-        List<Car> cars = user.getCar();
-        return cars.stream()
-                .map(car -> objectMapper.convertValue(car, CarDataResponse.class))
-                .collect(Collectors.toList());
-    }
 }
