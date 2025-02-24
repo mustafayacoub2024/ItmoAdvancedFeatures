@@ -1,11 +1,9 @@
 package com.example.ItmoAdvancedFeatures.extended.service.impl;
 
-
-import com.example.ItmoAdvancedFeatures.extended.model.db.entity.Car;
+import com.example.ItmoAdvancedFeatures.extended.exception.CommonBackendException;
 import com.example.ItmoAdvancedFeatures.extended.model.db.entity.User;
 import com.example.ItmoAdvancedFeatures.extended.model.db.repository.UserRepository;
 import com.example.ItmoAdvancedFeatures.extended.model.dto.requests.UserDataRequest;
-import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.CarDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.UserDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.model.enums.UserStatus;
 import com.example.ItmoAdvancedFeatures.extended.service.UserService;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +34,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserFromDB(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.orElse(new User());
+        String errMessage = String.format("User с id %s не найден", id);
+        return optionalUser.orElseThrow(() -> new CommonBackendException(errMessage, HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDataRequest postUser(UserDataRequest userDataRequest) {
+        String errMessage = String.format("Такой пользователь уже существует");
+        userRepository.findUserByEmail(userDataRequest.getEmail()).ifPresent(user -> {
+            throw new CommonBackendException(errMessage, HttpStatus.CONFLICT);
+        });
+
         User user = objectMapper.convertValue(userDataRequest, User.class);
         user.setStatus(UserStatus.CREATED);
 
@@ -56,11 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDataResponse putUser(UserDataRequest userDataRequest, Long id) {
         User user = getUserFromDB(id);
-        if (user.getId() != null) {
-            return objectMapper.convertValue(user, UserDataResponse.class);
-        }
         User updatedUser = objectMapper.convertValue(userDataRequest, User.class);
-
         user.setEmail(updatedUser.getEmail() == null ? user.getEmail() : updatedUser.getEmail());
         user.setPassword(updatedUser.getPassword() == null ? user.getPassword() : updatedUser.getPassword());
         user.setFirstName(updatedUser.getFirstName() == null ? user.getFirstName() : updatedUser.getFirstName());
@@ -77,11 +78,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User user = getUserFromDB(id);
-        if (user.getId() == null) {
-            log.error("Пользователь с id{} не найден", id);
-            return;
-        }
-
         user.setStatus(UserStatus.DELETED);
         userRepository.save(user);
     }
@@ -115,5 +111,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateCarList(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public void invalidateSessions() {
+        String email = UserDataRequest.Fields.email;
+        String age = UserDataRequest.Fields.age;
     }
 }

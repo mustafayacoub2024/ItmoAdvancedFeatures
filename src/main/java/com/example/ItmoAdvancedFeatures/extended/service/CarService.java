@@ -26,4 +26,6 @@ public interface CarService {
     Page<CarDataResponse> getAllCars(Integer page, Integer perPage, String sort, Sort.Direction order, String filter);
 
     List<CarDataResponse> getCarsByUserId(Long userId);
+
+    void invalidateSessions();
 }

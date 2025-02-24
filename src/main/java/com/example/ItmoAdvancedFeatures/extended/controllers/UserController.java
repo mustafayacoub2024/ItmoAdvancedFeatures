@@ -4,6 +4,7 @@ import com.example.ItmoAdvancedFeatures.extended.model.dto.requests.UserDataRequ
 import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.CarDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.model.dto.responses.UserDataResponse;
 import com.example.ItmoAdvancedFeatures.extended.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,31 +30,37 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public UserDataResponse getUsers(@PathVariable Long id) {
+    @Operation(summary = "Получить пользователя по ID")
+    public UserDataResponse getUsers(@PathVariable  Long id) {
         return userService.getUsers(id);
     }
 
     @PostMapping
-    public UserDataRequest postUser(@RequestBody UserDataRequest userDataRequest) {
+    @Operation(summary = "Создать пользователя")
+    public UserDataRequest postUser(@RequestBody @Valid UserDataRequest userDataRequest) {
         return userService.postUser(userDataRequest);
     }
 
     @PutMapping("/{id}")
-    public UserDataResponse putUser(@RequestBody UserDataRequest userDataRequest, @PathVariable Long id) {
+    @Operation(summary = "Обновить данные пользователя по ID")
+    public UserDataResponse putUser(@RequestBody @Valid UserDataRequest userDataRequest, @PathVariable Long id) {
         return userService.putUser(userDataRequest, id);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Удалить пользователя по ID")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
     @GetMapping
-    public UserDataResponse getUsersWithParams(@RequestParam String email, @RequestParam String firstName) {
+    @Operation(summary = "Получить пользователя по электронной почты и фамилий")
+    public UserDataResponse getUsersWithParams(@RequestParam @Valid String email, @RequestParam @Valid String firstName) {
         return userService.getUsersWithParams(email, firstName);
     }
 
     @GetMapping("/all")
+    @Operation(summary = "Получить список пользователей")
     public Page<UserDataResponse> getAllUsers(@RequestParam(defaultValue = "1") Integer page,
                                               @RequestParam(defaultValue = "10") Integer perPage,
                                               @RequestParam(defaultValue = "lastName") String sort,
